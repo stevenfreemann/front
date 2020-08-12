@@ -15,18 +15,6 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import Container from '@material-ui/core/Container';
 import SendIcon from '@material-ui/icons/Send';
 
-function Copyright() {
-  return (
-    <Typography variant="body2" color="textSecondary" align="center">
-      {'Copyright © '}
-      <Link color="inherit" href="https://material-ui.com/">
-        Your Website
-      </Link>{' '}
-      {new Date().getFullYear()}
-      {'.'}
-    </Typography>
-  );
-}
 
 class vistaVto extends React.Component {
 state = { dataKey: null, postulados:[]};
@@ -72,7 +60,7 @@ state = { dataKey: null, postulados:[]};
         </Toolbar>
       </AppBar>
       <div>
-      <Container maxWidth="xl">       
+      <Container maxWidth="xl" color="primary">       
         <Grid container spacing={1} flexGrow={1}>
           {this.state.postulados.map((card) => (
             <Grid item key={card} xs={7} sm={5} md={4}>
@@ -80,7 +68,7 @@ state = { dataKey: null, postulados:[]};
                <img src={require('./'+card.url)} width="300" height="220"/>  
                 <CardContent>
                   <Typography gutterBottom variant="h5" component="h2">
-                      {card.nombre}
+                      {card.nombre}{card.votos}
                     </Typography>
                   <Typography>
                     {card.info}
@@ -88,7 +76,10 @@ state = { dataKey: null, postulados:[]};
                 </CardContent>
                 <Grid justify="center" alignItems="center">
                 <CardActions>
-                  <Button onClick={() => { alert('clicked') }} endIcon={<SendIcon></SendIcon>}>
+                  <Button 
+                  type="submit"
+                  onClick={() => { this.votar(card.id) }} 
+                  endIcon={<SendIcon></SendIcon>}>
                     Votar
                   </Button>
                 </CardActions>
@@ -101,6 +92,13 @@ state = { dataKey: null, postulados:[]};
       </div>
     </div>
     );
+  }
+  votar(id){
+    const { drizzle, drizzleState } = this.props;
+    console.log(drizzleState);
+    drizzle.contracts.Votacion.methods.votar(id).send({from:drizzleState.accounts[0]})
+    var posicion=id-1;
+    console.log(this.state.postulados)
   }
 }
 
