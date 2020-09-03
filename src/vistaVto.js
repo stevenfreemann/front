@@ -19,7 +19,7 @@ import SendIcon from '@material-ui/icons/Send';
 class vistaVto extends React.Component {
 state = { dataKey: null, postulados:[]};
   componentDidMount() {
-    const { drizzle } = this.props;
+    const { drizzle, drizzleState  } = this.props;
     const contract = drizzle.contracts.Votacion;  
       var c={};
       drizzle.contracts.Votacion.methods.numero_candidatos().call().then(value=>{
@@ -40,6 +40,7 @@ state = { dataKey: null, postulados:[]};
           c = new Object();
          }              
        })  
+       console.log(drizzleState.accounts[1])
   } 
   render() {
   
@@ -60,8 +61,9 @@ state = { dataKey: null, postulados:[]};
         </Toolbar>
       </AppBar>
       <div>
+        <br/><br/>
       <Container maxWidth="xl" color="primary">       
-        <Grid container spacing={1} flexGrow={1}>
+        <Grid container spacing={1}>
           {this.state.postulados.map((card) => (
             <Grid item key={card} xs={7} sm={5} md={4}>
               <Card>
@@ -74,7 +76,7 @@ state = { dataKey: null, postulados:[]};
                     {card.info}
                     </Typography>
                 </CardContent>
-                <Grid justify="center" alignItems="center">
+                <Grid>
                 <CardActions>
                   <Button 
                   type="submit"

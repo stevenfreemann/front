@@ -8,7 +8,7 @@ const bip39 = require('bip39');
 const hdkey = require('ethereumjs-wallet/hdkey');
 const wallet = require('ethereumjs-wallet');
 const Web3 = require('web3');
-var web3 = new Web3("http://192.168.174.129:8545");
+//var web3 = new Web3("http://192.168.174.129:8545");
 /*
 const mnemonic='snap' // mnemonic is the string containing the words
 const seed = bip39.mnemonicToSeed(mnemonic);
@@ -23,7 +23,7 @@ const addr = addr_node.getWallet().getAddressString(); //check that this is the 
 const private_key = addr_node.getWallet().getPrivateKey();
 console.log(addr)*/
 //let accounts;
-  const accounts=web3.eth.getAccounts();
+//  const accounts=web3.eth.getAccounts();
   //console.log(accounts);
 
 
@@ -36,7 +36,7 @@ const options = {
   web3: {
     fallback: {
       type: "ws",
-      url: "ws://192.168.174.129",
+      url: "ws://127.0.0.1:8545",
     },
   },
 };
@@ -45,4 +45,4 @@ const options = {
 const drizzle = new Drizzle(options);
 
 
-ReactDOM.render(<App drizzle={drizzle} accounts={accounts}/>, document.getElementById('root'));
+ReactDOM.render(<App drizzle={drizzle}/>, document.getElementById('root'));

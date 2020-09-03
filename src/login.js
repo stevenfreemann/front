@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Email from './email';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -13,7 +14,11 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Imagen from './images/login.png';
-import Alert from '@material-ui/lab/Alert';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -46,8 +51,8 @@ const useStyles = makeStyles((theme) => ({
     margin: theme.spacing(3, 0, 2),
   },
 }));
-function validacion(){
-  var correo1=this.refs.correo1.getValue();
+function validacion() {
+  var correo1 = this.refs.correo1.getValue();
   console.log(correo1);
   /*if(correo1!=correo2){
   return(
@@ -57,34 +62,38 @@ function validacion(){
   ) 
   }*/
 }
+
+
 export default function SignInSide(props) {
   const classes = useStyles();
-  const [correo1, setCorreo1]= useState("");
-  const [correo2, setCorreo2]= useState("");
-  const [alerta, setAlerta]= useState(null);
-  const [error, setError]= useState()
-  const { drizzle } = props;
+  const [correo2, setCorreo2] = useState("");
+  const [correo1, setCorreo1] = useState("");
+  //const [password, setPassword] = useState("");
+  const [alerta, setAlerta] = useState(null);
+  const [open, setOpen] = useState(false);
+  const [error, setError] = useState()
+  const {drizzle,drizzleState} = props;
+  const [generate, setGenerate] = useState("mi contraseña");
+  const [showMessage, setShowMessage] = useState(false);
+
+
   const handleChange = e => {
     setCorreo1(e.target.value);
   }
   const handleChange2 = e => {
     setCorreo2(e.target.value);
   }
-  const validar=()=>{ 
-      console.log(drizzle.web3.eth.getAccounts())
-    if(correo1.toLowerCase()!=correo2.toLowerCase()){
-      setAlerta(<Alert variant="filled" severity="error">Los dos campos no coinciden</Alert>);
-    }else{
-      if(!correo1.includes('@ucundinamarca.edu.co')){
-        setAlerta(<Alert severity="warning">Correo Institucional no valido</Alert>)
-      }else{
-        setAlerta(null)
-      }
-      
-    }
+ 
     
-  }
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
   return (
+
     <Grid container component="main" className={classes.root}>
       <CssBaseline />
       <Grid item xs={false} sm={4} md={7} className={classes.image} />
@@ -99,8 +108,8 @@ export default function SignInSide(props) {
           </Typography>
           <form className={classes.form} noValidate>
             <TextField
-              value={correo1}    
-              onChange={handleChange}       
+              value={correo1}
+              onChange={handleChange}
               variant="outlined"
               margin="normal"
               required
@@ -110,10 +119,12 @@ export default function SignInSide(props) {
               name="email"
               autoComplete="email"
               autoFocus
+              error={correo1 === "@ucundinamarca.edu.co"}
+              helperText={correo1 === "@ucundinamarca.edu.co" ? 'Empty!' : ' '}
             />
             <TextField
-             value={correo2}    
-             onChange={handleChange2}  
+              value={correo2}
+              onChange={handleChange2}
               variant="outlined"
               margin="normal"
               required
@@ -124,18 +135,9 @@ export default function SignInSide(props) {
               autoComplete="email"
               autoFocus
             />
-            <Button
-              onClick={validar}
-              fullWidth
-              variant="contained"
-              color="primary"
-            >
-              Ingresar
-            </Button>
+            {<Email correo={correo1} correo2={correo2}></Email>}
             <Grid container>
-              <Grid item xs>               
-                  Espere un correo con una llave unica que le permitira realizar su voto
-              </Grid>
+              <br />          
             </Grid>
           </form>
         </div>
