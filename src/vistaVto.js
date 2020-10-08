@@ -2,25 +2,25 @@ import React from 'react';
 import Grid from '@material-ui/core/Grid';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
-import CardMedia from '@material-ui/core/CardMedia';
 import Typography from '@material-ui/core/Typography';
 import CardActions from '@material-ui/core/CardActions';
 import Button from '@material-ui/core/Button';
-import Link from '@material-ui/core/Link';
-import {makeStyles} from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import HowToVoteIcon from '@material-ui/icons/HowToVote';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Container from '@material-ui/core/Container';
 import SendIcon from '@material-ui/icons/Send';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import Snackbar from '@material-ui/core/Snackbar';
+import Alert from '@material-ui/lab/Alert';
 
 
 class vistaVto extends React.Component {
-state = { dataKey: null, postulados:[]};
+state = { dataKey: null, postulados:[],ok:false,fail:false,carga:false,redirect:null};
   componentDidMount() {
     const { drizzle, drizzleState  } = this.props;
-    const contract = drizzle.contracts.Votacion;  
+    
       var c={};
       drizzle.contracts.Votacion.methods.numero_candidatos().call().then(value=>{
         for(var i=1 ; i<=value;i++){            
@@ -30,7 +30,7 @@ state = { dataKey: null, postulados:[]};
               id :candidato.id,
               nombre: candidato.nombre,
               votos: candidato.cantidad_votos,
-              url: candidato.url,
+              url: require('/'+candidato.url),
               info: candidato.info
             }
             this.setState(prevState => ({
@@ -43,9 +43,32 @@ state = { dataKey: null, postulados:[]};
        console.log(drizzleState.accounts[1])
   } 
   render() {
-  
     return (
       <div>
+        {this.state.redirect}
+      <Snackbar
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'left',
+        }}
+        open={this.state.carga}
+        message="Note archived"
+        action={
+          <React.Fragment>
+            <CircularProgress color="inherit" />
+          </React.Fragment>
+        }
+      />
+      <Snackbar open={this.state.ok} autoHideDuration={6000}>
+        <Alert severity="success">
+          Voto realizado correctamente!
+        </Alert>
+      </Snackbar>
+      <Snackbar open={this.state.fail} autoHideDuration={6000}>
+        <Alert severity="error">
+          Token no valido!
+        </Alert>
+      </Snackbar>         
       <CssBaseline />
       <AppBar position="relative">
         <Toolbar>
@@ -62,15 +85,17 @@ state = { dataKey: null, postulados:[]};
       </AppBar>
       <div>
         <br/><br/>
-      <Container maxWidth="xl" color="primary">       
+      <Container maxWidth="xl" color="primary">
+         
         <Grid container spacing={1}>
+        
           {this.state.postulados.map((card) => (
             <Grid item key={card} xs={7} sm={5} md={4}>
               <Card>
-               <img src={require('./'+card.url)} width="300" height="220"/>  
+               <img src={card.url} width="300" height="220"/>  
                 <CardContent>
                   <Typography gutterBottom variant="h5" component="h2">
-                      {card.nombre}{card.votos}
+                      {card.nombre}
                     </Typography>
                   <Typography>
                     {card.info}
@@ -96,11 +121,19 @@ state = { dataKey: null, postulados:[]};
     );
   }
   votar(id){
+    this.setState({carga:true})
+    var token = this.props.match.params.token;
     const { drizzle, drizzleState } = this.props;
     console.log(drizzleState);
-    drizzle.contracts.Votacion.methods.votar(id).send({from:drizzleState.accounts[0]})
-    var posicion=id-1;
-    console.log(this.state.postulados)
+    drizzle.contracts.Votacion.methods.votar(id,token).send({from:drizzleState.accounts[1]})
+    .then(promise=>{
+      console.log("promesa: "+ promise);
+      this.setState({carga:false,ok:true})
+    }).catch(error=>{
+      console.log("el error es: "+error);
+      this.setState({carga:false,fail:true})
+    });
+    
   }
 }
 

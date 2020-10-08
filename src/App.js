@@ -1,14 +1,17 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
 import './App.css';
 import VistaVto from "./vistaVto";
 import Login from "./login";
 import Home from "./Home";
+import Loginadm from "./admin/Loginadmin";
+import Dashboard from "./admin/Dashboard";
+import CountDown from "./countDown";
+import Resultados from "./resultados";
+import { home, login, vistavto, logAdmin, dashboard, countDown, resultados }from "./config/routes";
 import {
   BrowserRouter as Router,
   Switch,
   Route,
-  Link
 } from "react-router-dom";
 
 class App extends Component {
@@ -17,13 +20,13 @@ class App extends Component {
   componentDidMount() {
     const { drizzle } = this.props;
 
-    // subscribe to changes in the store
+    // Suscribe cambios a la store
     this.unsubscribe = drizzle.store.subscribe(() => {
 
-      // every time the store updates, grab the state from drizzle
+      // actualiza el estado de la tienda
       const drizzleState = drizzle.store.getState();
 
-      // check to see if it's ready, if so, update local component state
+      // Verifica Que drizzle este inicializado
       if (drizzleState.drizzleStatus.initialized) {
 
         this.setState({ loading: false, drizzleState });
@@ -31,36 +34,53 @@ class App extends Component {
       }
     });
 
-
   }
   componentWillUnmount() {
     this.unsubscribe();
   }
 
-  constructor() {
-    super();
-  }
-
-
   render() {
-    /*   */
-    if (this.state.loading) return "Loading Drizzle...";
+    
+    if (this.state.loading) return "Cargando estado blockchain";
+    
     return (
       <Router>
         <div className="App">
         <Switch>
-          <Route path="/" exact>
+          <Route path={home()} exact>
             <Home></Home>
           </Route>
-          <Route path="/login">
+          <Route path={countDown()} exact>
+            <CountDown></CountDown>
+          </Route>
+          <Route path={login()} >
             <Login
               drizzle={this.props.drizzle}
               drizzleState={this.state.drizzleState} />
           </Route>
-          <Route path="/vote">
-            <VistaVto
-              drizzle={this.props.drizzle}
-              drizzleState={this.state.drizzleState} />
+          <Route exact path={vistavto()} 
+            render={ props=>
+          <VistaVto {...props}
+            drizzle={this.props.drizzle}
+            drizzleState={this.state.drizzleState}/>}> 
+          </Route>
+          <Route exact path={logAdmin()}
+            render={ props=>
+          <Loginadm {...props}
+            drizzle={this.props.drizzle}
+            drizzleState={this.state.drizzleState}/>}> 
+          </Route>
+          <Route exact path={resultados()}
+            render={ props=>
+          <Resultados {...props}
+            drizzle={this.props.drizzle}
+            drizzleState={this.state.drizzleState}/>}> 
+          </Route>
+          <Route exact path={dashboard()+"/:pass"} 
+            render={ props=> 
+            <Dashboard {...props}
+            drizzle={this.props.drizzle}
+            drizzleState={this.state.drizzleState}/>}>   
           </Route>
         </Switch>
         </div>
